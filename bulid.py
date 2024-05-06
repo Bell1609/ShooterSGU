@@ -1,25 +1,27 @@
+# Các thư viện cần thiết
 import pygame
 from pygame import mixer
 import os
 import random
 import csv
 import button
-
+#--------#
 mixer.init()
 pygame.init()
 
-
+#Thiết lập màn hình game
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = int(SCREEN_WIDTH * 0.8)
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Shooter')
+#-----#
 
-#set framerate
+#Thiết lập thời gian và tần số khung hình
 clock = pygame.time.Clock()
 FPS = 60
 
-#define game variables
+#Thiết lập biến trò chơi
 GRAVITY = 0.75
 SCROLL_THRESH = 200
 ROWS = 16
@@ -29,12 +31,11 @@ TILE_TYPES = 21
 MAX_LEVELS = 3
 screen_scroll = 0
 bg_scroll = 0
-level = 1
+level = 1 #max level is 3
 start_game = False
 start_intro = False
 
-
-#define player action variables
+#Thuộc tính người chơi
 moving_left = False
 moving_right = False
 shoot = False
@@ -42,10 +43,10 @@ grenade = False
 grenade_thrown = False
 
 
-#load music and sounds
-#pygame.mixer.music.load('audio/music2.mp3')
-#pygame.mixer.music.set_volume(0.3)
-#pygame.mixer.music.play(-1, 0.0, 5000)
+#Cài đặt âm thanh
+pygame.mixer.music.load('audio/music2.mp3')
+pygame.mixer.music.set_volume(0.1)
+pygame.mixer.music.play(-1, 0.0, 5000)
 jump_fx = pygame.mixer.Sound('audio/jump.wav')
 jump_fx.set_volume(0.05)
 shot_fx = pygame.mixer.Sound('audio/shot.wav')
@@ -54,7 +55,7 @@ grenade_fx = pygame.mixer.Sound('audio/grenade.wav')
 grenade_fx.set_volume(0.05)
 
 
-#load images
+#Cài đặt hình ảnh
 #button images
 start_img = pygame.image.load('img/start_btn.png').convert_alpha()
 exit_img = pygame.image.load('img/exit_btn.png').convert_alpha()
@@ -64,12 +65,6 @@ pine1_img = pygame.image.load('img/Background/pine1.png').convert_alpha()
 pine2_img = pygame.image.load('img/Background/pine2.png').convert_alpha()
 mountain_img = pygame.image.load('img/Background/mountain.png').convert_alpha()
 sky_img = pygame.image.load('img/Background/sky_cloud.png').convert_alpha()
-#store tiles in a list
-img_list = []
-for x in range(TILE_TYPES):
-	img = pygame.image.load(f'img/Tile/{x}.png')
-	img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
-	img_list.append(img)
 #bullet
 bullet_img = pygame.image.load('img/icons/bullet.png').convert_alpha()
 #grenade
@@ -83,9 +78,14 @@ item_boxes = {
 	'Ammo'		: ammo_box_img,
 	'Grenade'	: grenade_box_img
 }
+#load tiles
+img_list = []
+for x in range(TILE_TYPES):
+	img = pygame.image.load(f'img/Tile/{x}.png')
+	img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
+	img_list.append(img)
 
-
-#define colours
+#thiết lập màu
 BG = (144, 201, 120)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
@@ -93,14 +93,14 @@ GREEN = (0, 255, 0)
 BLACK = (0, 0, 0)
 PINK = (235, 65, 54)
 
-#define font
+#thiết lập font
 font = pygame.font.SysFont('Futura', 30)
 
 def draw_text(text, font, text_col, x, y):
 	img = font.render(text, True, text_col)
 	screen.blit(img, (x, y))
 
-
+#Hàm vẽ background
 def draw_bg():
 	screen.fill(BG)
 	width = sky_img.get_width()
@@ -111,7 +111,7 @@ def draw_bg():
 		screen.blit(pine2_img, ((x * width) - bg_scroll * 0.8, SCREEN_HEIGHT - pine2_img.get_height()))
 
 
-#function to reset level
+#Hàm reset level
 def reset_level():
 	enemy_group.empty()
 	bullet_group.empty()
@@ -132,7 +132,7 @@ def reset_level():
 
 
 
-
+#Khởi tạo lớp nhân vật
 class Soldier(pygame.sprite.Sprite):
 	def __init__(self, char_type, x, y, scale, speed, ammo, grenades):
 		pygame.sprite.Sprite.__init__(self)
