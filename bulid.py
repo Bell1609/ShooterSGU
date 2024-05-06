@@ -216,7 +216,7 @@ class Soldier(pygame.sprite.Sprite):
 			self.vel_y
 		dy += self.vel_y
 
-		#check for collision
+		#Kiểm tra va chạm với màn hình
 		for tile in world.obstacle_list:
 			#check collision in the x direction
 			if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
@@ -237,31 +237,26 @@ class Soldier(pygame.sprite.Sprite):
 					self.in_air = False
 					dy = tile[1].top - self.rect.bottom
 
-
-		#check for collision with water
+		#Kiểm tra va chạm với nước
 		if pygame.sprite.spritecollide(self, water_group, False):
 			self.health = 0
-
-		#check for collision with exit
+		#Kiểm tra va chạm với item box
 		level_complete = False
 		if pygame.sprite.spritecollide(self, exit_group, False):
 			level_complete = True
-
-		#check if fallen off the map
+		#Kiểm tra ra khỏi màn hình
 		if self.rect.bottom > SCREEN_HEIGHT:
 			self.health = 0
-
-
-		#check if going off the edges of the screen
+		#Kiểm tra va chạm với enemy
 		if self.char_type == 'player':
 			if self.rect.left + dx < 0 or self.rect.right + dx > SCREEN_WIDTH:
 				dx = 0
 
-		#update rectangle position
+		#Cập nhật vị trí nhân vật
 		self.rect.x += dx
 		self.rect.y += dy
 
-		#update scroll based on player position
+		#Cập nhật scroll
 		if self.char_type == 'player':
 			if (self.rect.right > SCREEN_WIDTH - SCROLL_THRESH and bg_scroll < (world.level_length * TILE_SIZE) - SCREEN_WIDTH)\
 				or (self.rect.left < SCROLL_THRESH and bg_scroll > abs(dx)):
@@ -271,7 +266,7 @@ class Soldier(pygame.sprite.Sprite):
 		return screen_scroll, level_complete
 
 
-
+	#Hàm xử lý bắn đạn
 	def shoot(self):
 		if self.shoot_cooldown == 0 and self.ammo > 0:
 			self.shoot_cooldown = 20
@@ -281,7 +276,7 @@ class Soldier(pygame.sprite.Sprite):
 			self.ammo -= 1
 			shot_fx.play()
 
-
+	#Hàm xử lý enemy AI
 	def ai(self):
 		if self.alive and player.alive:
 			if self.idling == False and random.randint(1, 200) == 1:
@@ -358,14 +353,13 @@ class Soldier(pygame.sprite.Sprite):
 	def draw(self):
 		screen.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
 
-
+#Khởi tạo lớp xử lý dữ liệu
 class World():
 	def __init__(self):
 		self.obstacle_list = []
-
 	def process_data(self, data):
 		self.level_length = len(data[0])
-		#iterate through each value in level data file
+		#lặp qua từng giá trị trong tệp dữ liệu cấp độ
 		for y, row in enumerate(data):
 			for x, tile in enumerate(row):
 				if tile >= 0:
@@ -400,7 +394,6 @@ class World():
 					elif tile == 20:#create exit
 						exit = Exit(img, x * TILE_SIZE, y * TILE_SIZE)
 						exit_group.add(exit)
-
 		return player, health_bar
 
 
@@ -409,18 +402,17 @@ class World():
 			tile[1][0] += screen_scroll
 			screen.blit(tile[0], tile[1])
 
-
+#Khởi tạo lớp trang trí
 class Decoration(pygame.sprite.Sprite):
 	def __init__(self, img, x, y):
 		pygame.sprite.Sprite.__init__(self)
 		self.image = img
 		self.rect = self.image.get_rect()
 		self.rect.midtop = (x + TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
-
 	def update(self):
 		self.rect.x += screen_scroll
 
-
+#Khởi tạo lớp nước
 class Water(pygame.sprite.Sprite):
 	def __init__(self, img, x, y):
 		pygame.sprite.Sprite.__init__(self)
@@ -431,6 +423,7 @@ class Water(pygame.sprite.Sprite):
 	def update(self):
 		self.rect.x += screen_scroll
 
+#Khởi tạo lớp exit
 class Exit(pygame.sprite.Sprite):
 	def __init__(self, img, x, y):
 		pygame.sprite.Sprite.__init__(self)
@@ -441,7 +434,7 @@ class Exit(pygame.sprite.Sprite):
 	def update(self):
 		self.rect.x += screen_scroll
 
-
+#Khởi tạo lớp vật phẩm
 class ItemBox(pygame.sprite.Sprite):
 	def __init__(self, item_type, x, y):
 		pygame.sprite.Sprite.__init__(self)
@@ -468,7 +461,7 @@ class ItemBox(pygame.sprite.Sprite):
 			#delete the item box
 			self.kill()
 
-
+#Khởi tạo lớp thanh máu
 class HealthBar():
 	def __init__(self, x, y, health, max_health):
 		self.x = x
@@ -485,7 +478,7 @@ class HealthBar():
 		pygame.draw.rect(screen, RED, (self.x, self.y, 150, 20))
 		pygame.draw.rect(screen, GREEN, (self.x, self.y, 150 * ratio, 20))
 
-
+#Khởi tạo lớp đạn
 class Bullet(pygame.sprite.Sprite):
 	def __init__(self, x, y, direction):
 		pygame.sprite.Sprite.__init__(self)
@@ -518,7 +511,7 @@ class Bullet(pygame.sprite.Sprite):
 					self.kill()
 
 
-
+#Khởi tạo lớp lựu đạn
 class Grenade(pygame.sprite.Sprite):
 	def __init__(self, x, y, direction):
 		pygame.sprite.Sprite.__init__(self)
@@ -577,7 +570,7 @@ class Grenade(pygame.sprite.Sprite):
 					enemy.health -= 50
 
 
-
+#Khởi tạo lớp vụ nổ
 class Explosion(pygame.sprite.Sprite):
 	def __init__(self, x, y, scale):
 		pygame.sprite.Sprite.__init__(self)
