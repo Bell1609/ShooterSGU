@@ -143,10 +143,10 @@ class Soldier(pygame.sprite.Sprite):
 		self.start_ammo = ammo
 		self.shoot_cooldown = 0
 		self.grenades = grenades
-		self.health = 100
+		self.health = 1000 #mau
 		self.max_health = self.health
 		self.direction = 1
-		self.vel_y = 0
+		self.vel_y = 0     #nhảycao
 		self.jump = False
 		self.in_air = True
 		self.flip = False
@@ -206,7 +206,7 @@ class Soldier(pygame.sprite.Sprite):
 
 		#jump
 		if self.jump == True and self.in_air == False:
-			self.vel_y = -11
+			self.vel_y = -12
 			self.jump = False
 			self.in_air = True
 
